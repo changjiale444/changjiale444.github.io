@@ -39,16 +39,19 @@ function remarkBasePaths() {
  */
 function rehypeBasePaths() {
   const base = (process.env.ASTRO_BASE ?? '').replace(/\/$/, '');
-  if (!base) return (tree) => tree;
 
   function walk(node) {
     if (node.type === 'element') {
+      if (node.tagName === 'img') {
+        node.properties.loading = 'lazy';
+        node.properties.decoding = 'async';
+      }
       const src = node.properties?.src;
-      if (typeof src === 'string' && src.startsWith('/') && !src.startsWith('//')) {
+      if (base && typeof src === 'string' && src.startsWith('/') && !src.startsWith('//')) {
         node.properties.src = `${base}${src}`;
       }
       const href = node.properties?.href;
-      if (typeof href === 'string' && href.startsWith('/') && !href.startsWith('//')) {
+      if (base && typeof href === 'string' && href.startsWith('/') && !href.startsWith('//')) {
         node.properties.href = `${base}${href}`;
       }
     }
@@ -68,7 +71,7 @@ function rehypeBasePaths() {
 // `import.meta.env.SITE` and `import.meta.env.BASE_URL`; it is not the
 // source of truth for deployment URLs.
 export default defineConfig({
-  site: process.env.ASTRO_SITE ?? 'https://example.github.io', // override via ASTRO_SITE env var or edit directly
+  site: process.env.ASTRO_SITE ?? 'https://changjiale444.github.io', // override via ASTRO_SITE env var or edit directly
   base: process.env.ASTRO_BASE ?? '', // override via ASTRO_BASE env var or set '/repo-name' for project pages
   output: 'static',
   trailingSlash: 'always',

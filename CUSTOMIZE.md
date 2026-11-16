@@ -816,3 +816,18 @@ footer: {
 | `'hidden'` | Footer is not rendered at all                                                             |
 
 When `'sticky'`, the body automatically gains `padding-bottom` to prevent page content from being obscured by the footer. The back-to-top button is also repositioned to sit above it.
+
+## Jiale Chang academic site
+
+- `src/config/profile.ts`: homepage copy, interests, education, research affiliations, honors, labels.
+- `src/data/about.mdx`: independent first-person biography.
+- `site.researchGraph`: enables the lightweight SVG research graph (keyboard links, hover, reduced motion).
+- `src/components/publications/PaperCard.astro`: shared homepage/publication list presentation; no runtime bibliography fetch.
+- Announcement frontmatter `displayDate` controls visible precision; `uncertainDate: true` groups year-only news separately. Internal `date` is only a sort key. Homepage shows five news records, with Show All / Show Less when more exist.
+- Draft posts are excluded from public routes, tag/category paths, RSS, sitemap, related posts and search.
+- Original/private material stays in gitignored `my-assets/`; only approved public assets belong under `public/assets/`.
+- Research project: `src/content/projects/embodied.md`; public results are explicitly attributed to the supplied CV.
+
+### Profile sidebar and subtle interaction effects
+
+The homepage uses a left profile column with the portrait, name, affiliations, contact links, and section navigation. On mobile the portrait sits to the left of the name and the page returns to one column. `site.homepage.showPortrait` can hide the portrait. `site.homepage.subtleEffects` controls card hover feedback and one-time section entrance effects. Reduced-motion preferences disable motion; all content remains visible without JavaScript. The research graph is available in an expandable sidebar section. The sidebar becomes sticky only when the viewport has enough height.

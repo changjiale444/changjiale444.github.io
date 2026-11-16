@@ -1,0 +1,47 @@
+---
+import { profile } from '@config/profile';
+import { site } from '@config/site';
+const nodes = [
+  { x: 180, y: 70, i: 0 },
+  { x: 315, y: 160, i: 1 },
+  { x: 205, y: 260, i: 2 },
+  { x: 65, y: 170, i: 3 },
+];
+---
+
+<div class="research-graph" aria-label={profile.graphLabel}>
+  <div class="graph-kicker">{profile.graphLabel}</div>
+  <svg viewBox="0 0 400 320" role="group" aria-label={profile.graphLabel}>
+    <defs
+      ><pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"
+        ><circle cx="1" cy="1" r=".7" fill="currentColor" opacity=".22"></circle></pattern
+      ></defs
+    >
+    <rect width="400" height="320" fill="url(#dots)"></rect>
+    <g class="graph-lines" fill="none" stroke="currentColor"
+      ><path d="M180 70L315 160L205 260L65 170Z M180 70L205 260 M65 170L315 160"></path><circle
+        cx="190"
+        cy="165"
+        r="114"
+        stroke-dasharray="3 7"
+        opacity=".4"></circle></g
+    >
+    {
+      nodes.map((n) => (
+        <a
+          href={`${site.base}${n.i === 2 ? '/projects/embodied/' : '/publications/'} `.trim()}
+          aria-label={profile.interests[n.i]}
+        >
+          <>
+            <circle class="node-halo" cx={n.x} cy={n.y} r="22" />
+            <circle class="node-core" cx={n.x} cy={n.y} r="6" />
+            <text x={n.x} y={n.y + (n.i === 0 ? -29 : 39)} text-anchor="middle">
+              {profile.interests[n.i]}
+            </text>
+          </>
+        </a>
+      ))
+    }
+  </svg>
+  <p>{profile.graphCaption}</p>
+</div>

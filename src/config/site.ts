@@ -29,13 +29,23 @@ export const site = {
   /** Base path from Astro's resolved `base` option. */
   base: import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL.replace(/\/$/, ''),
 
+  /** Enable the lightweight, keyboard-accessible research graph. */
+  researchGraph: true,
+
+  homepage: {
+    /** Show the author's portrait in the left profile column. */
+    showPortrait: true,
+    /** Enable restrained hover and one-time section entrance effects. */
+    subtleEffects: true,
+  },
+
   // ─── Identity ──────────────────────────────────────────────────────────────
 
   /** Site title. Shown in the browser tab and navbar. */
-  title: 'Albert Einstein',
+  title: 'Jiale Chang',
 
   /** Site description. Used in meta tags. */
-  description: 'A simple, clean, and responsive Astro template for academics. Powered by as-folio.',
+  description: 'Jiale Chang — research on agent memory, multimodal intelligence, and embodied AI.',
 
   /** Language code for the site. */
   lang: 'en',
@@ -44,30 +54,20 @@ export const site = {
 
   author: {
     /** Full name shown in navbar, about page heading, and footer. */
-    name: 'Albert Einstein',
+    name: 'Jiale Chang',
 
     /** Short email address (used in social links). */
-    email: 'einstein@example.com',
+    email: 'changjiale@stu.njau.edu.cn',
 
     /** Path to profile photo. Place image in public/assets/img/. */
-    avatar: '/assets/img/prof_pic.jpg',
+    avatar: '/assets/img/avatar.webp',
 
     /**
      * Subtitle below your name on the about page.
      * HTML is supported.
      */
-    subtitle: `Theoretical Physicist
-      &nbsp;·&nbsp;
-      <a href="https://en.wikipedia.org/wiki/Institute_for_Advanced_Study">Institute for Advanced Study</a>,
-      Princeton`,
-
-    /**
-     * Address block below profile photo.
-     * HTML is supported.
-     */
-    moreInfo: `<p>Institute for Advanced Study</p>
-      <p>Einstein Drive</p>
-      <p>Princeton, NJ 08540</p>`,
+    subtitle: 'Agent Memory · Multimodal Intelligence · Embodied AI',
+    moreInfo: '',
   },
 
   // ─── Social links ──────────────────────────────────────────────────────────
@@ -79,16 +79,16 @@ export const site = {
   //   bluesky_handle, medium_username, cv_pdf, rss_icon
 
   socials: {
-    email: 'einstein@example.com',
+    email: 'changjiale@stu.njau.edu.cn',
     x_username: undefined as string | undefined,
     linkedin_username: undefined as string | undefined,
-    github_username: undefined as string | undefined,
+    github_username: 'changjiale444' as string | undefined,
     gitlab_username: undefined as string | undefined,
     /** Google Scholar user ID — the part after user= in your Scholar URL */
-    scholar_userid: 'qc6CJjYAAAAJ',
+    scholar_userid: '6l5RGSkAAAAJ' as string | undefined,
     orcid_id: undefined as string | undefined,
     /** Inspire HEP author ID */
-    inspire_id: '1010907',
+    inspire_id: undefined as string | undefined,
     researchgate_username: undefined as string | undefined,
     arxiv_id: undefined as string | undefined,
     youtube_id: undefined as string | undefined,
@@ -97,7 +97,7 @@ export const site = {
     bluesky_handle: undefined as string | undefined,
     medium_username: undefined as string | undefined,
     /** Path to CV PDF in public/assets/pdf/ */
-    cv_pdf: '/assets/pdf/example_pdf.pdf',
+    cv_pdf: '/assets/pdf/jiale-chang-cv.pdf',
     /** Show RSS icon in social links */
     rss_icon: true,
   },
@@ -117,20 +117,11 @@ export const site = {
      * `href` values are relative to the site root (base is prepended automatically).
      */
     items: [
-      { label: 'about', href: '/' },
-      { label: 'blog', href: '/blog/' },
-      { label: 'publications', href: '/publications/' },
-      { label: 'projects', href: '/projects/' },
-      { label: 'repositories', href: '/repositories/' },
-      { label: 'cv', href: '/cv/' },
-      {
-        label: 'more',
-        children: [
-          { label: 'teaching', href: '/teaching/' },
-          { label: 'people', href: '/people/' },
-          { label: 'books', href: '/books/' },
-        ],
-      },
+      { label: 'Home', href: '/' },
+      { label: 'Research', href: '/research/' },
+      { label: 'Publications', href: '/publications/' },
+      { label: 'Blog', href: '/blog/' },
+      { label: 'CV', href: '/cv/' },
     ] as NavItem[],
   },
 
@@ -153,7 +144,7 @@ export const site = {
      * 'normal'  — sits at the natural bottom of page content (only visible when scrolled down)
      * 'hidden'  — footer is not rendered at all
      */
-    position: 'sticky' as 'sticky' | 'normal' | 'hidden',
+    position: 'normal' as 'sticky' | 'normal' | 'hidden',
   },
 
   // ─── CV page ───────────────────────────────────────────────────────────────
@@ -166,22 +157,22 @@ export const site = {
      */
     format: 'rendercv' as 'rendercv' | 'jsonresume',
     /** Path to CV PDF for the download button in public/assets/pdf/. */
-    pdfPath: '/assets/pdf/example_pdf.pdf',
+    pdfPath: '/assets/pdf/jiale-chang-cv.pdf',
   },
 
   // ─── Blog ──────────────────────────────────────────────────────────────────
 
   blog: {
     /** Name shown in the blog page heading. */
-    name: 'as-folio',
-    description: 'A simple, clean, and responsive Astro template for academics.',
+    name: 'Writing',
+    description: 'Research notes, paper readings, and things learned along the way.',
     /** Number of posts per page. */
     postsPerPage: 5,
     /**
      * Tags shown as badges on the blog listing page header.
      * Users can click them to filter posts by tag.
      */
-    displayTags: ['formatting', 'images', 'links', 'math', 'code', 'blockquotes'],
+    displayTags: [] as string[],
     /** Categories shown as badges on the blog listing page header. */
     displayCategories: [] as string[],
     /**
@@ -198,7 +189,7 @@ export const site = {
     /** Average reading speed (words per minute) used for reading-time estimates. */
     wordsPerMinute: 200 as number,
     /** Message shown on the blog listing page when no posts exist. */
-    emptyMessage: 'No posts yet. Check back soon!',
+    emptyMessage: 'Research notes and technical articles are coming soon.',
   },
 
   // ─── About page sections ──────────────────────────────────────────────────
@@ -255,7 +246,7 @@ export const site = {
      * Enable Astro View Transitions for smooth page-to-page animations.
      * Disable if you prefer full page reloads (e.g. for accessibility reasons).
      */
-    viewTransitions: true,
+    viewTransitions: false,
     /** Show social sharing links (X, LinkedIn, Facebook, email) at the bottom of blog posts. */
     socialShare: true,
   },
@@ -310,7 +301,7 @@ export const site = {
     /** Include Open Graph meta tags. */
     enabled: true,
     /** Default OG image path (in public/). */
-    image: '' as string,
+    image: '/assets/img/avatar.webp' as string,
   },
 
   // ─── Newsletter ───────────────────────────────────────────────────────────
@@ -328,7 +319,7 @@ export const site = {
      * Set to a calendar address like 'user@gmail.com' to show the embed.
      * Leave empty string to hide the calendar section entirely.
      */
-    calendarId: 'test@gmail.com' as string,
+    calendarId: '' as string,
     /** Timezone for the Google Calendar embed (e.g., 'America/New_York'). */
     timezone: 'America/New_York' as string,
   },
@@ -350,7 +341,7 @@ export const site = {
      * Max number of authors shown before "and N more..." link.
      * Set to undefined to always show all authors.
      */
-    maxAuthorLimit: 3 as number | undefined,
+    maxAuthorLimit: undefined as number | undefined,
     /** Enable thumbnail images for publications (if `preview` set in BibTeX). */
     thumbnails: true,
     /**
@@ -408,7 +399,7 @@ export const site = {
   pages: {
     projects: {
       /** Description shown below the "projects" heading on the projects page. */
-      description: 'A growing collection of your cool projects.',
+      description: 'Embodied simulation and workflow navigation.',
     },
     teaching: {
       /** Description shown below the "teaching" heading on the teaching page. */
@@ -439,8 +430,8 @@ export const site = {
      *   Custom hover:     { light: '#0076df', dark: '#68c0d9', hoverLight: '#0a53be', hoverDark: '#9fd8ea' }
      */
     color: {
-      light: 'auto' as string,
-      dark: 'auto' as string,
+      light: '#4776E6' as string,
+      dark: '#7A9CFF' as string,
       hoverLight: 'auto' as string,
       hoverDark: 'auto' as string,
     },

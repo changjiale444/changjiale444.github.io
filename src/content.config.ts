@@ -160,6 +160,10 @@ const announcements = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/announcements' }),
   schema: z.object({
     date: z.coerce.date(),
+    /** Human-readable date; use year only when month is unknown. */
+    displayDate: z.string().optional(),
+    /** Year-only records are grouped separately from precisely dated records. */
+    uncertainDate: z.boolean().optional().default(false),
     /** Pin this announcement to the top. */
     pinned: z.boolean().optional().default(false),
     /** Hide from the announcements list. */

@@ -3,6 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { readingTime } from './reading-time';
 
 describe('readingTime', () => {
+  it('counts Chinese text without depending on spaces', () => {
+    expect(readingTime('研'.repeat(401))).toBe(3);
+  });
+
+  it('counts mixed Chinese and English text', () => {
+    expect(readingTime('研'.repeat(200) + ' agent memory')).toBe(2);
+  });
   it('returns 1 for empty string', () => {
     expect(readingTime('')).toBe(1);
   });

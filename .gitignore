@@ -35,3 +35,21 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Source collection can contain private information; never publish it.
+my-assets/
+
+# Keep the pinned Yarn CLI available on fresh checkouts.
+!.yarn/
+!.yarn/releases/
+!.yarn/releases/yarn-4.13.0.cjs
+
+# Local review screenshots and non-site build output
+*-preview*.jpg
+build/
+out/
+
+# Credentials must never be committed
+.ghconfig/
+*.pem
+*.key

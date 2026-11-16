@@ -184,10 +184,10 @@ const breadcrumbLd = {
             <>
               {al.url ? (
                 <a href={al.url} target="_blank" rel="noopener noreferrer">
-                  {al.isSelf ? <em>{al.name}</em> : al.name}
+                  {al.isSelf ? <strong>{al.name}</strong> : al.name}
                 </a>
               ) : al.isSelf ? (
-                <em>{al.name}</em>
+                <strong>{al.name}</strong>
               ) : (
                 al.name
               )}

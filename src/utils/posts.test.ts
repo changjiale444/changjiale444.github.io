@@ -13,6 +13,7 @@ function makePost(
     tags?: string[];
     categories?: string[];
     hidden?: boolean;
+    draft?: boolean;
     pinned?: boolean;
   } = {},
 ) {
@@ -24,6 +25,7 @@ function makePost(
       tags: opts.tags ?? [],
       categories: opts.categories ?? [],
       hidden: opts.hidden ?? false,
+      draft: opts.draft ?? false,
       pinned: opts.pinned ?? false,
     },
   } as any;
@@ -52,6 +54,12 @@ describe('sortPosts', () => {
 });
 
 describe('visiblePosts', () => {
+  it('excludes unpublished drafts from visible and related posts', () => {
+    const published = makePost('published', { tags: ['memory'] });
+    const draft = makePost('draft', { draft: true, tags: ['memory'] });
+    expect(visiblePosts([published, draft])).toEqual([published]);
+    expect(relatedPosts(published, [published, draft])).toEqual([]);
+  });
   it('filters out hidden posts', () => {
     const visible = makePost('v');
     const hidden = makePost('h', { hidden: true });

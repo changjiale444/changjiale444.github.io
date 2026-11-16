@@ -13,9 +13,6 @@ const announcements = (await getCollection('announcements'))
 const rendered = await Promise.all(
   announcements.map(async (item) => ({ item, rendered: await render(item) })),
 );
-
-const formatDate = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 ---
 
 <Page title="News" description={`News and announcements from ${site.author.name}`}>
@@ -33,7 +30,7 @@ const formatDate = (d: Date) =>
               {rendered.map(({ item, rendered: { Content } }) => (
                 <tr style="border-bottom: 1px solid var(--global-divider-color);">
                   <td style="padding: 0.5rem 1rem 0.5rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
-                    {formatDate(item.data.date)}
+                    {item.data.displayDate ?? item.data.date.getUTCFullYear()}
                   </td>
                   <td style="padding: 0.5rem 0; font-size: 0.9rem; color: var(--global-text-color);">
                     <Content />

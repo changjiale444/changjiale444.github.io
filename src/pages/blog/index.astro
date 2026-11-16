@@ -1,6 +1,7 @@
 ---
 import PostCard from '@components/blog/PostCard.astro';
 import Pagination from '@components/Pagination.astro';
+import { profile } from '@config/profile';
 import { site } from '@config/site';
 import Page from '@layouts/Page.astro';
 import { fetchExternalPosts } from '@utils/external-posts';
@@ -171,9 +172,18 @@ const postYears = [...postsByYear.keys()].sort((a, b) => b - a);
   <!-- Post list grouped by year -->
   {
     pagePosts.length === 0 ? (
-      <p style="color: var(--global-text-color-light); padding-top: 2rem;">
-        {site.blog.emptyMessage}
-      </p>
+      <div class="empty-state">
+        <span class="empty-symbol" aria-hidden="true">
+          ✎
+        </span>
+        <h3>{profile.emptyTitle}</h3>
+        <p>{site.blog.emptyMessage}</p>
+        <div class="interest-tags">
+          {['Research Notes', 'Paper Reading', 'Technical Tutorials', 'Thoughts'].map((c) => (
+            <span>{c}</span>
+          ))}
+        </div>
+      </div>
     ) : (
       postYears.map((year) => (
         <>

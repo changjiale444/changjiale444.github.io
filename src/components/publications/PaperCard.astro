@@ -1,0 +1,62 @@
+---
+import { profile } from '@config/profile';
+import { site } from '@config/site';
+import { type BibEntry, getAuthors, getCleanBibtex, getTitle, getVenue } from '@utils/bibtex';
+interface Props {
+  entry: BibEntry;
+}
+const { entry } = Astro.props;
+const f = entry.fields;
+const authors = getAuthors(entry).split(', ');
+const category =
+  entry.type === 'inproceedings' ? 'Conference' : entry.type === 'article' ? 'Journal' : 'Preprint';
+const links = [
+  { label: profile.paper, url: f.html || f.pdf },
+  { label: profile.code, url: f.code },
+  { label: profile.project, url: f.website },
+].filter((x) => x.url);
+---
+
+<article class="paper-card" data-category={category}>
+  <a
+    class="paper-image"
+    href={`${site.base}/publications/${entry.key}/`}
+    aria-label={getTitle(entry)}
+    ><img
+      src={`${site.base}${site.publications.previewDir}${f.preview}`}
+      alt={`${getTitle(entry)} — original method or taxonomy figure`}
+      loading="lazy"
+      width="480"
+      height="300"
+    /></a
+  >
+  <div class="paper-body">
+    <div class="paper-meta">
+      <span class="venue-badge">{f.abbr}</span><span
+        >{category === 'Preprint' ? 'Survey / Preprint' : f.note} · {f.year}</span
+      >
+    </div>
+    <h3><a href={`${site.base}/publications/${entry.key}/`}>{getTitle(entry)}</a></h3>
+    <p class="authors">
+      {
+        authors.map((a, i) => (
+          <Fragment>
+            {i > 0 ? ', ' : ''}
+            {a === site.author.name ? <strong>{a}</strong> : a}
+          </Fragment>
+        ))
+      }
+    </p>
+    <p class="paper-venue">{getVenue(entry)}</p>
+    <div class="paper-links">
+      {
+        links.map((l) => (
+          <a href={l.url} target="_blank" rel="noopener noreferrer">
+            {l.label}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        ))
+      }<details><summary>{profile.bibtex}</summary><pre>{getCleanBibtex(entry)}</pre></details>
+    </div>
+  </div>
+</article>

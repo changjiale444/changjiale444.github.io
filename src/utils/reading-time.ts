@@ -6,6 +6,9 @@
  * @returns Estimated reading time in minutes (minimum 1)
  */
 export function readingTime(body: string, wpm = 200): number {
-  const wordCount = body.trim().split(/\s+/).length;
+  const cjk = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu;
+  const characterCount = (body.match(cjk) ?? []).length;
+  const words = body.replace(cjk, ' ').trim().split(/\s+/).filter(Boolean).length;
+  const wordCount = characterCount + words;
   return Math.max(1, Math.ceil(wordCount / wpm));
 }

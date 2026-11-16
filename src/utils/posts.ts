@@ -16,7 +16,7 @@ export function sortPosts(posts: Post[]): Post[] {
  * Filter out hidden and redirect posts.
  */
 export function visiblePosts(posts: Post[]): Post[] {
-  return posts.filter((p) => !p.data.hidden);
+  return posts.filter((p) => !p.data.hidden && !p.data.draft);
 }
 
 /**
@@ -38,7 +38,7 @@ function tagSimilarity(a: Post, b: Post): number {
  */
 export function relatedPosts(current: Post, all: Post[], limit = 3): Post[] {
   return all
-    .filter((p) => p.id !== current.id && !p.data.hidden)
+    .filter((p) => p.id !== current.id && !p.data.hidden && !p.data.draft)
     .map((p) => ({ post: p, score: tagSimilarity(current, p) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || b.post.data.date.getTime() - a.post.data.date.getTime())

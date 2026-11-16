@@ -1,7 +1,10 @@
 ---
 import type { NavItem } from '@config/site';
 import { site } from '@config/site';
+import { parseBibtex } from '@utils/bibtex';
 import { getCollection } from 'astro:content';
+
+import bibRaw from '../../data/papers.bib?raw';
 
 const base = site.base || '';
 
@@ -55,17 +58,14 @@ const projects = (await getCollection('projects')).map(
   }),
 );
 
-const teaching = (await getCollection('teaching')).map(
-  (t): SearchItem => ({
-    id: `teaching-${t.id}`,
-    title: t.data.title,
-    section: 'Teaching',
-    href: `${base}/teaching/`,
-    keywords: t.data.term ?? '',
-  }),
-);
-
-const allItems: SearchItem[] = [...posts, ...projects, ...teaching];
+const publications: SearchItem[] = parseBibtex(bibRaw).map((p) => ({
+  id: p.key,
+  title: p.fields.title,
+  section: 'Publications',
+  href: `${base}/publications/${p.key}/`,
+  keywords: p.fields.abstract ?? '',
+}));
+const allItems: SearchItem[] = [...posts, ...projects, ...publications];
 ---
 
 <!-- ninja-keys web component -->

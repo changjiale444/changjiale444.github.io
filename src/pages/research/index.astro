@@ -1,0 +1,43 @@
+---
+import { profile as p } from '@config/profile';
+import { site } from '@config/site';
+import Base from '@layouts/Base.astro';
+---
+
+<Base title={p.researchTitle} description={p.researchIntro}
+  ><div class="academic-shell inner-page">
+    <p class="eyebrow">MEMORY TO ACTION</p><h1>{p.researchTitle}</h1><p class="page-intro">
+      {p.researchIntro}
+    </p><div class="interest-tags">{p.interests.map((i) => <span>{i}</span>)}</div><a
+      class="research-feature"
+      href={`${site.base}/projects/embodied/`}
+      ><div>
+        <p class="eyebrow">{p.projectMeta}</p><h2>{p.projectTitle}</h2><p>
+          {p.projectDescription}
+        </p><span class="project-arrow">{p.projectLink} ↗</span>
+      </div><img
+        src={`${site.base}/assets/projects/embodied.webp`}
+        alt={p.projectTitle}
+        width="480"
+        height="300"
+        loading="lazy"
+      /></a
+    ><section class="home-section">
+      <h2>{p.experienceTitle}</h2><ul class="lab-list">
+        {
+          p.labs.map((l) => (
+            <li>
+              {l.url ? (
+                <a href={l.url} target="_blank" rel="noopener noreferrer">
+                  {l.name} ↗
+                </a>
+              ) : (
+                l.name
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div></Base
+>

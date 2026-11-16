@@ -6,7 +6,7 @@ import Page from '@layouts/Page.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection('posts');
+  const allPosts = await getCollection('posts', (p) => !p.data.draft);
   const perPage = site.blog.postsPerPage;
   const postCategories = allPosts.flatMap((p) => p.data.categories);
   const allCategories = [...new Set([...postCategories, ...site.blog.displayCategories])];

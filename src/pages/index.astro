@@ -1,236 +1,324 @@
 ---
-import ProfilePhoto from '@components/about/ProfilePhoto.astro';
-import SocialLinks from '@components/SocialLinks.astro';
+import PaperCard from '@components/publications/PaperCard.astro';
+import ResearchGraph from '@components/ResearchGraph.astro';
+import { profile as p } from '@config/profile';
 import { site } from '@config/site';
 import Base from '@layouts/Base.astro';
-import { getAuthors, getBoolField, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
+import { parseBibtex } from '@utils/bibtex';
 import { getCollection, render } from 'astro:content';
 
-import AboutContent from '../data/about.mdx';
-import bibRaw from '../data/papers.bib?raw';
-
-// Announcements
-const allAnnouncements = site.announcements.enabled
-  ? (await getCollection('announcements'))
-      .filter((e) => !e.data.hidden)
-      .sort((a, b) => {
-        if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
-        return b.data.date.getTime() - a.data.date.getTime();
-      })
-      .slice(0, site.announcements.limit)
-  : [];
-
-// Latest posts
-const allPosts = site.latestPosts.enabled
-  ? (await getCollection('posts'))
-      .filter((p) => !p.data.hidden)
-      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-      .slice(0, site.latestPosts.limit)
-  : [];
-
-const formatDate = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-
-// Selected publications
-const selectedPapers = site.selectedPapers.enabled
-  ? parseBibtex(bibRaw).filter((e) => getBoolField(e, 'selected'))
-  : [];
-
-// Pre-render announcement content
-const renderedAnnouncements = await Promise.all(
-  allAnnouncements.map(async (item) => ({ item, rendered: await render(item) })),
-);
+import About from '../data/about.mdx';
+import raw from '../data/papers.bib?raw';
+const papers = parseBibtex(raw).filter((p) => p.fields.selected === 'true');
+const news = (await getCollection('announcements'))
+  .filter((n) => !n.data.hidden)
+  .sort(
+    (a, b) =>
+      Number(a.data.uncertainDate) - Number(b.data.uncertainDate) ||
+      b.data.date.getTime() - a.data.date.getTime(),
+  );
+const rendered = await Promise.all(news.map(async (item) => ({ item, ...(await render(item)) })));
+const posts = (await getCollection('posts'))
+  .filter((x) => !x.data.draft && !x.data.hidden)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+const ids = ['about', 'news', 'publications', 'research', 'writing', 'honors', 'education'];
 ---
 
-<Base isHome={true}>
-  <div class="post page-container py-8">
-    <header class="post-header">
-      <h1
-        class="post-title"
-        style="font-family: var(--font-sans); color: var(--global-text-color);"
-      >
-        {(site.title as string) === 'blank' ? site.author.name : site.title}
-      </h1>
-      {
-        site.author.subtitle && (
-          <p
-            class="desc"
-            style="color: var(--global-text-color-light);"
-            set:html={site.author.subtitle}
-          />
-        )
-      }
-    </header>
-
-    <article>
-      <!-- Profile photo (floats right by default) -->
-      <ProfilePhoto align="right" />
-
-      <div class="clearfix">
-        <!-- Bio content from about.mdx -->
-        <div class="prose max-w-none">
-          <AboutContent />
+<Base isHome>
+  <div class="academic-shell academic-home" data-effects={site.homepage.subtleEffects}>
+    <aside class="profile-sidebar" aria-label={site.author.name}>
+      <div class="profile-identity">
+        {
+          site.homepage.showPortrait && (
+            <img
+              class="profile-portrait"
+              src={`${site.base}${site.author.avatar}`}
+              alt={site.author.name}
+              width="210"
+              height="280"
+              fetchpriority="high"
+            />
+          )
+        }
+        <div class="profile-name">
+          <h1>{site.author.name}</h1><p lang="zh">{p.chineseName}</p><span
+            class="profile-research-line">{p.sidebarFocus}</span
+          >
         </div>
       </div>
-
-      <!-- Social icons -->
+      <div class="profile-affiliations">
+        <p>{p.status}</p><p>
+          {p.next}<br /><a href={p.macLab.url} target="_blank" rel="noopener noreferrer"
+            >{p.macLab.name} ↗</a
+          >
+        </p>
+      </div>
+      <div class="profile-links">
+        <a href={`mailto:${site.author.email}`}
+          ><span>{p.email}</span><span aria-hidden="true">↗</span><small>{site.author.email}</small
+          ></a
+        >
+        <a
+          href={`https://github.com/${site.socials.github_username}`}
+          target="_blank"
+          rel="noopener noreferrer"><span>{p.github}</span><span aria-hidden="true">↗</span></a
+        >
+        {
+          site.socials.scholar_userid && (
+            <a
+              href={`https://scholar.google.com/citations?user=${site.socials.scholar_userid}&hl=zh-CN`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <>
+                <span>{p.scholar}</span>
+                <span aria-hidden="true">↗</span>
+              </>
+            </a>
+          )
+        }
+        <a href={`${site.base}${site.cv.pdfPath}`} target="_blank" rel="noopener noreferrer"
+          ><span>{p.cv}</span><span aria-hidden="true">↓</span></a
+        >
+      </div>
+      <nav class="section-nav" aria-label={p.sidebarNavigation}>
+        {
+          p.sections.map((label, i) => (
+            <a href={`#${ids[i]}`}>
+              <>
+                <span>{label.replace('Featured ', '')}</span>
+                <span aria-hidden="true">↗</span>
+              </>
+            </a>
+          ))
+        }
+      </nav>
       {
-        site.socials && (
-          <div class="social mt-6">
-            <div class="contact-icons">
-              <SocialLinks />
-            </div>
-          </div>
+        site.researchGraph && (
+          <details class="sidebar-map">
+            <>
+              <summary>
+                {p.graphLabel}
+                <span aria-hidden="true">+</span>
+              </summary>
+              <ResearchGraph />
+            </>
+          </details>
         )
       }
-
-      <!-- Announcements / News -->
-      {
-        site.announcements.enabled && allAnnouncements.length > 0 && (
-          <section class="mt-8">
-            <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
-              <a href={`${site.base}/news/`} style="color: inherit; text-decoration: none;">
-                news
+    </aside>
+    <div class="academic-content">
+      <section id="about" class="home-section about-section">
+        <p class="eyebrow">{p.eyebrow}</p>
+        <div class="section-heading">
+          <h2>{p.sections[0]}</h2><span class="section-index">01 / INTRODUCTION</span>
+        </div><div class="prose bio"><About /></div><div class="interest-tags">
+          {p.interests.map((i) => <span>{i}</span>)}
+        </div>
+      </section>
+      <section id="news" class="home-section">
+        <div class="section-heading">
+          <h2>{p.sections[1]}</h2><span class="section-index">02 / UPDATES</span>
+        </div><div class="news-list" id="news-list">
+          {
+            rendered.map(({ item, Content }, i) => (
+              <div class="news-item" hidden={i >= 5}>
+                <>
+                  <time>{item.data.displayDate ?? item.data.date.getUTCFullYear()}</time>
+                  <div>
+                    <Content />
+                  </div>
+                </>
+              </div>
+            ))
+          }
+        </div>{
+          news.length > 5 && (
+            <button
+              class="text-link"
+              id="news-toggle"
+              data-all={p.showAll}
+              data-less={p.showLess}
+              aria-expanded="false"
+              aria-controls="news-list"
+            >
+              {p.showAll}
+            </button>
+          )
+        }
+      </section>
+      <section id="publications" class="home-section">
+        <div class="section-heading">
+          <h2>{p.sections[2]}</h2><a href={`${site.base}/publications/`}>{p.allPapers} ↗</a>
+        </div><div class="paper-list">{papers.map((entry) => <PaperCard entry={entry} />)}</div>
+      </section>
+      <section id="research" class="home-section">
+        <div class="section-heading">
+          <h2>{p.sections[3]}</h2><span class="section-index">04 / EXPLORATION</span>
+        </div><a class="research-feature" href={`${site.base}/projects/embodied/`}
+          ><div>
+            <p class="eyebrow">EMBODIED INTELLIGENCE</p><h3>{p.projectTitle}</h3><p>
+              {p.projectDescription}
+            </p><span class="subtle">{p.projectMeta}</span><span class="project-arrow"
+              >{p.projectLink} ↗</span
+            >
+          </div><img
+            src={`${site.base}/assets/projects/embodied.webp`}
+            loading="lazy"
+            alt="Scientific laboratory simulation with multiple floors"
+            width="480"
+            height="300"
+          /></a
+        >
+      </section>
+      <section id="writing" class="home-section">
+        <div class="section-heading">
+          <h2>{p.sections[4]}</h2><a href={`${site.base}/blog/`}>{p.allWriting} ↗</a>
+        </div>{
+          posts.length ? (
+            posts.map((post) => (
+              <a class="writing-row" href={`${site.base}/blog/${post.id}/`}>
+                <>
+                  <time>{post.data.date.toISOString().slice(0, 10)}</time>
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.description}</p>
+                </>
               </a>
-            </h2>
-            <div class={site.announcements.scrollable ? 'scrollable-list' : ''}>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                  {renderedAnnouncements.map(({ item, rendered: { Content } }) => (
-                    <tr style="border-bottom: 1px solid var(--global-divider-color);">
-                      <td style="padding: 0.5rem 1rem 0.5rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
-                        {formatDate(item.data.date)}
-                      </td>
-                      <td style="padding: 0.5rem 0; font-size: 0.9rem; color: var(--global-text-color);">
-                        <Content />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            ))
+          ) : (
+            <div class="empty-state">
+              <>
+                <span class="empty-symbol" aria-hidden="true">
+                  ✎
+                </span>
+                <h3>{p.emptyTitle}</h3>
+                <p>{site.blog.emptyMessage}</p>
+                <div class="interest-tags">
+                  <>
+                    <span>Research Notes</span>
+                    <span>Paper Reading</span>
+                    <span>Technical Tutorials</span>
+                    <span>Thoughts</span>
+                  </>
+                </div>
+              </>
             </div>
-          </section>
-        )
-      }
-
-      <!-- Latest posts -->
-      {
-        site.latestPosts.enabled && allPosts.length > 0 && (
-          <section class="mt-8">
-            <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
-              <a href={`${site.base}/blog/`} style="color: inherit; text-decoration: none;">
-                latest posts
-              </a>
-            </h2>
-            <div class={site.latestPosts.scrollable ? 'scrollable-list' : ''}>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                  {allPosts.map((post) => (
-                    <tr style="border-bottom: 1px solid var(--global-divider-color);">
-                      <td style="padding: 0.5rem 1rem 0.5rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
-                        {formatDate(post.data.date)}
-                      </td>
-                      <td style="padding: 0.5rem 0; font-size: 0.9rem;">
-                        <a
-                          href={`${site.base}/blog/${post.id}/`}
-                          style="color: var(--global-theme-color); text-decoration: none;"
-                        >
-                          {post.data.title}
+          )
+        }
+      </section>
+      <div class="closing-grid">
+        <section id="honors" class="home-section">
+          <div class="section-heading"><h2>{p.sections[5]}</h2></div><ul class="awards">
+            {
+              p.awards.map((award, i) => (
+                <li>
+                  <span class="award-mark" aria-hidden="true">
+                    {i < 2 ? '✧' : '◇'}
+                  </span>
+                  {award}
+                </li>
+              ))
+            }
+          </ul>
+        </section><section id="education" class="home-section">
+          <div class="section-heading"><h2>{p.sections[6]}</h2></div><div
+            class="education-timeline"
+          >
+            {
+              p.education.map((e) => (
+                <div>
+                  <>
+                    <span class="small-status">{e.status}</span>
+                    <h3>{e.school}</h3>
+                    <p>{e.degree}</p>
+                    <span class="subtle">
+                      {e.url ? (
+                        <a href={e.url} target="_blank" rel="noopener noreferrer">
+                          {e.detail} ↗
                         </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )
-      }
-
-      <!-- Selected publications -->
-      {
-        site.selectedPapers.enabled && selectedPapers.length > 0 && (
-          <section class="mt-8">
-            <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
-              <a href={`${site.base}/publications/`} style="color: inherit; text-decoration: none;">
-                selected publications
-              </a>
-            </h2>
-            <ol class="m-0 list-none p-0">
-              {selectedPapers.map((entry) => {
-                const title = getTitle(entry);
-                const authors = getAuthors(entry);
-                const venue = getVenue(entry);
-                const year = getYear(entry);
-                const abbr = entry.fields.abbr;
-                const url =
-                  entry.fields.html ??
-                  (entry.fields.doi ? `https://doi.org/${entry.fields.doi}` : '');
-                const award = entry.fields.award;
-                return (
-                  <li class="mb-4 text-sm" style="line-height: 1.6;">
-                    {abbr && <span class="badge-abbr mr-2">{abbr}</span>}
-                    {url ? (
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style="color: var(--global-text-color); font-weight: 600; text-decoration: none;"
-                      >
-                        {title}
-                      </a>
-                    ) : (
-                      <strong style="color: var(--global-text-color);">{title}</strong>
-                    )}
-                    <br />
-                    <span style="color: var(--global-text-color-light);">{authors}</span>
-                    {(venue || year) && (
-                      <>
-                        {' · '}
-                        <em style="color: var(--global-text-color-light);">
-                          {venue}
-                          {venue && year ? ', ' : ''}
-                          {year || ''}
-                        </em>
-                      </>
-                    )}
-                    {award && (
-                      <span class="badge-abbr ml-2" style="background-color: #f59e0b;">
-                        {entry.fields.award_name ?? '🏆'}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-            <p class="mt-2 text-sm">
-              <a
-                href={`${site.base}/publications/`}
-                style="color: var(--global-theme-color); text-decoration: none;"
-              >
-                Full publication list &rarr;
-              </a>
-            </p>
-          </section>
-        )
-      }
-    </article>
+                      ) : (
+                        e.detail
+                      )}
+                    </span>
+                  </>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 </Base>
-
-<style>
-  .clearfix::after {
-    content: '';
-    display: table;
-    clear: both;
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('#news-toggle');
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    document.querySelectorAll<HTMLElement>('.news-item').forEach((n, i) => {
+      n.hidden = !open && i >= 5;
+    });
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? toggle.dataset.less! : toggle.dataset.all!;
+  });
+  const sections = [...document.querySelectorAll<HTMLElement>('section[id]')];
+  const sectionLinks = [...document.querySelectorAll<HTMLAnchorElement>('.section-nav a')];
+  const updateActiveSection = () => {
+    const marker = Math.min(window.innerHeight * 0.28, 220);
+    let active = sections[0]?.id;
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= marker) active = section.id;
+    }
+    sectionLinks.forEach((link) => {
+      if (link.hash === `#${active}`) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  let scrollFrame = 0;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (scrollFrame) return;
+      scrollFrame = requestAnimationFrame(() => {
+        updateActiveSection();
+        scrollFrame = 0;
+      });
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', updateActiveSection, { passive: true });
+  updateActiveSection();
+  const sidebar = document.querySelector<HTMLElement>('.profile-sidebar');
+  if (sidebar) {
+    const updateSidebar = () =>
+      sidebar.classList.toggle(
+        'is-sticky',
+        window.innerWidth >= 768 && sidebar.offsetHeight + 110 <= window.innerHeight,
+      );
+    new ResizeObserver(updateSidebar).observe(sidebar);
+    window.addEventListener('resize', updateSidebar, { passive: true });
+    updateSidebar();
   }
-  .post-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
+  const home = document.querySelector<HTMLElement>('.academic-home');
+  if (home?.dataset.effects === 'true') {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const reveal = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          if (!reducedMotion.matches)
+            entry.target.animate(
+              [
+                { opacity: 0.45, transform: 'translateY(12px)' },
+                { opacity: 1, transform: 'translateY(0)' },
+              ],
+              { duration: 480, easing: 'cubic-bezier(.2,.7,.3,1)' },
+            );
+          reveal.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.08 },
+    );
+    home.querySelectorAll('.home-section').forEach((section) => reveal.observe(section));
   }
-  .desc {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
-</style>
+</script>

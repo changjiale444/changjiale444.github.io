@@ -342,3 +342,17 @@ as-folio began as an Astro reimplementation of the [al-folio](https://github.com
 ## License
 
 MIT © [Dadang NH](https://github.com/dadangnh)
+
+## Jiale Chang's academic website
+
+This checkout customizes as-folio for Jiale Chang (常嘉乐). The upstream documentation and MIT license are preserved above.
+
+- Website: https://changjiale444.github.io/
+- Repository: https://github.com/changjiale444/changjiale444.github.io
+- Framework: Astro 6, TypeScript, Tailwind CSS 4; statically generated for GitHub Pages.
+- Local development: Node.js 24+, `corepack enable`, `yarn install --immutable`, `yarn dev`.
+- On the original development machine, `./start-local.command` also locates the bundled Node runtime.
+- Deployment: pushes to `main` run `.github/workflows/deploy.yml`. Set Pages source to **GitHub Actions**. The pipeline checks types, lint, tests, build, and generated links before deploying.
+- No built files are committed; `dist/` is uploaded as a Pages artifact by GitHub Actions.
+- Private originals in `my-assets/`, `.env`, dependencies, build output, and local QA screenshots are excluded from Git.
+- Editing content, assets and publication metadata: see [MAINTENANCE.md](MAINTENANCE.md), [ASSETS_GUIDE.md](ASSETS_GUIDE.md), and [CONTENT_VERIFICATION.md](CONTENT_VERIFICATION.md).

@@ -18,7 +18,10 @@ const pathname = Astro.url.pathname;
 function isActive(href: string): boolean {
   const full = `${site.base}${href}`;
   if (href === '/') return pathname === full || pathname === site.base;
-  return pathname.startsWith(full);
+  return (
+    pathname.startsWith(full) ||
+    (href === '/research/' && pathname.startsWith(`${site.base}/projects/`))
+  );
 }
 
 function hasActiveChild(item: NavDropdown): boolean {
